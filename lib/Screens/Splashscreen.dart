@@ -1,15 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:gepete/Screens/App.dart';
 
-class Splashscreen extends StatefulWidget {
-  const Splashscreen({super.key});
-
+class SplashScreen extends StatefulWidget {
   @override
-  State<Splashscreen> createState() => _SplashscreenState();
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashscreenState extends State<Splashscreen> {
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 2), () {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => App()),
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Center(
+        child: Image.asset(
+          'Assets/Images/Logo.png', // Carga siempre el mismo logo
+          fit: BoxFit.cover,
+          width: 200,
+          height: 200,
+        ),
+      ),
+      backgroundColor: Colors.white, // Fija un fondo blanco
+    );
   }
 }

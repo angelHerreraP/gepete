@@ -28,7 +28,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - Assets/Images/
+    - Assets/Images/Logo.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
