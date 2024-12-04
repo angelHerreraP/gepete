@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:gepete/Menus/CustomAppBar.dart';
+import 'package:gepete/Menus/Drawer.dart';
 
-class App extends StatefulWidget {
+class App extends StatelessWidget {
   const App({super.key});
 
   @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: const CustomAppBar(),
+      drawer: const CustomDrawer(),
+      body: const Center(
+        child: Text('¡Bienvenido a ChatGTP!'),
+      ),
+    );
   }
 }
