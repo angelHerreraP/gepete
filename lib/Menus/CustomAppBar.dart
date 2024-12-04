@@ -13,7 +13,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: const [
             Icon(Icons.message, color: Colors.white),
             SizedBox(width: 8),
-            Text('ChatGePeTe'),
+            Text('GePeTe'),
           ],
         ),
       ),
