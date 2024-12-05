@@ -1,6 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-class RandomResponseButton extends StatelessWidget {
+class RandomResponseButton extends StatefulWidget {
+  const RandomResponseButton({super.key});
+
+  @override
+  _RandomResponseButtonState createState() => _RandomResponseButtonState();
+}
+
+class _RandomResponseButtonState extends State<RandomResponseButton> {
   final List<String> responses = [
     "Procesando... 🤔",
     "¿Eso es todo lo que tienes? 😂",
@@ -9,15 +18,25 @@ class RandomResponseButton extends StatelessWidget {
     "¡Claro! La respuesta es 42. 😎",
   ];
 
-  RandomResponseButton({super.key});
+  final Random _random = Random();
+  String? _lastResponse;
+
+  String _getRandomResponse() {
+    // Asegura que la respuesta sea diferente a la última
+    String newResponse;
+    do {
+      newResponse = responses[_random.nextInt(responses.length)];
+    } while (newResponse == _lastResponse && responses.length > 1);
+
+    _lastResponse = newResponse;
+    return newResponse;
+  }
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
       onPressed: () {
-        final randomResponse = responses[(responses.length *
-                (0.5 + 0.5 * (DateTime.now().millisecondsSinceEpoch % 1)))
-            .toInt()];
+        final randomResponse = _getRandomResponse();
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
