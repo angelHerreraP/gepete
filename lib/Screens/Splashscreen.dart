@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gepete/Screens/App.dart';
+import 'package:gepete/Screens/LoadFile.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -14,7 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => App()),
+          MaterialPageRoute(builder: (context) => PDFUploadPage()),
         );
       }
     });

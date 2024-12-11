@@ -1,8 +1,9 @@
-import 'dart:math'; // Importar Random
+import 'dart:convert'; // Añadido para manejar JSON
 
 import 'package:flutter/material.dart';
 import 'package:gepete/Menus/CustomAppBar.dart';
 import 'package:gepete/Menus/Drawer.dart';
+import 'package:http/http.dart' as http; // Añadido para solicitudes HTTP
 
 class ChatMessage {
   final String text;
@@ -24,35 +25,75 @@ class _AppState extends State<App> {
   final TextEditingController _controller = TextEditingController();
   final List<ChatMessage> _messages = [];
   final ScrollController _scrollController = ScrollController();
-  final Random _random = Random(); // Instancia de Random
 
-  final List<String> _aiResponses = [
-    "Procesando... 🤔",
-    "¿Eso es todo lo que tienes? 😂",
-    "Estoy 99% seguro de que no sé la respuesta.",
-    "¿Otra pregunta difícil? 😅",
-    "¡Claro! La respuesta es 42. 😎",
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Mensaje de bienvenida inicial
+    _messages.add(ChatMessage(
+      text:
+          'Hola! Estoy listo para ayudarte con el contenido de tu PDF. ¿En qué puedo asistirte?',
+      isUser: false,
+    ));
+  }
 
   String _formatTime(DateTime time) {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 
-  void _sendMessage() {
+  Future<void> _sendMessage() async {
     final String message = _controller.text.trim();
     if (message.isNotEmpty) {
+      // Añadir mensaje del usuario
       setState(() {
         _messages.add(ChatMessage(text: message, isUser: true));
-        _messages.add(ChatMessage(text: _generateAIResponse(), isUser: false));
         _controller.clear();
-        _scrollToBottom();
       });
-    }
-  }
 
-  String _generateAIResponse() {
-    final int randomIndex = _random.nextInt(_aiResponses.length);
-    return _aiResponses[randomIndex];
+      try {
+        // Realizar la solicitud HTTP
+        final response = await http.post(
+          Uri.parse('http://108.163.157.73:8000/query/'),
+          body: {
+            'question': message,
+            'target_language': 'es',
+            'model_name': 'llama2',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          // Parsear la respuesta JSON
+          final Map<String, dynamic> data = json.decode(response.body);
+
+          // Añadir respuesta de la IA
+          setState(() {
+            _messages.add(ChatMessage(
+              text: data['answer'] ?? 'No se pudo obtener una respuesta.',
+              isUser: false,
+            ));
+          });
+        } else {
+          // Manejar errores de la solicitud
+          setState(() {
+            _messages.add(ChatMessage(
+              text: 'Ups... Hubo un problema al comunicarte con el servidor.',
+              isUser: false,
+            ));
+          });
+        }
+      } catch (e) {
+        // Manejar errores de conexión
+        setState(() {
+          _messages.add(ChatMessage(
+            text: 'Error de conexión. Intenta de nuevo más tarde.',
+            isUser: false,
+          ));
+        });
+      }
+
+      // Desplazar al final del chat
+      _scrollToBottom();
+    }
   }
 
   void _scrollToBottom() {
@@ -139,6 +180,8 @@ class _AppState extends State<App> {
                         borderSide: BorderSide.none,
                       ),
                     ),
+                    onSubmitted: (_) =>
+                        _sendMessage(), // Añadir soporte para Enter
                   ),
                 ),
                 IconButton(
